@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeBankModel", "HomeBankModel\HomeBankModel.csproj", "{9F6FB6DF-C30D-4D7C-8664-04527D26AC24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HBTest", "HBTest\HBTest.csproj", "{0268614F-23B7-494B-8BE4-DF43C1DE3486}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HBMiddleTier", "HBMiddleTier\HBMiddleTier.csproj", "{DDB1D0AF-0A32-4726-B313-F91F814D0370}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F6FB6DF-C30D-4D7C-8664-04527D26AC24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F6FB6DF-C30D-4D7C-8664-04527D26AC24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F6FB6DF-C30D-4D7C-8664-04527D26AC24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F6FB6DF-C30D-4D7C-8664-04527D26AC24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0268614F-23B7-494B-8BE4-DF43C1DE3486}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0268614F-23B7-494B-8BE4-DF43C1DE3486}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0268614F-23B7-494B-8BE4-DF43C1DE3486}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0268614F-23B7-494B-8BE4-DF43C1DE3486}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDB1D0AF-0A32-4726-B313-F91F814D0370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDB1D0AF-0A32-4726-B313-F91F814D0370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDB1D0AF-0A32-4726-B313-F91F814D0370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDB1D0AF-0A32-4726-B313-F91F814D0370}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+EndGlobal

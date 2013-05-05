@@ -1,0 +1,849 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="HomeBankModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="HomeBankModelStoreContainer">
+          <EntitySet Name="Accounts" EntityType="HomeBankModel.Store.Accounts" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Banks" EntityType="HomeBankModel.Store.Banks" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Categories" EntityType="HomeBankModel.Store.Categories" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Transactions" EntityType="HomeBankModel.Store.Transactions" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Transfers" EntityType="HomeBankModel.Store.Transfers" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Users" EntityType="HomeBankModel.Store.Users" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Accounts_CreditInst" Association="HomeBankModel.Store.FK_Accounts_CreditInst">
+            <End Role="Banks" EntitySet="Banks" />
+            <End Role="Accounts" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Categories_Categories" Association="HomeBankModel.Store.FK_Categories_Categories">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Categories1" EntitySet="Categories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CreditInst_Users" Association="HomeBankModel.Store.FK_CreditInst_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Banks" EntitySet="Banks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Accounts" Association="HomeBankModel.Store.FK_Transactions_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="Transactions" EntitySet="Transactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Categories" Association="HomeBankModel.Store.FK_Transactions_Categories">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Transactions" EntitySet="Transactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transfers_Accounts" Association="HomeBankModel.Store.FK_Transfers_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="Transfers" EntitySet="Transfers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transfers_Accounts1" Association="HomeBankModel.Store.FK_Transfers_Accounts1">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="Transfers" EntitySet="Transfers" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Accounts">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="CreditInst" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Balance" Type="smallmoney" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime2" Nullable="false" />
+          <Property Name="LastModDate" Type="datetime2" />
+        </EntityType>
+        <EntityType Name="Banks">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="int" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="12" />
+        </EntityType>
+        <EntityType Name="Categories">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Type" Type="bit" Nullable="false" />
+          <Property Name="BelongsTo" Type="int" />
+        </EntityType>
+        <EntityType Name="Transactions">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AccountID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="Amount" Type="smallmoney" Nullable="false" />
+          <Property Name="CategoryID" Type="int" />
+          <Property Name="Date" Type="datetime2" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Transfers">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="AccountFrom" Type="int" Nullable="false" />
+          <Property Name="AccountTo" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="smallmoney" Nullable="false" />
+          <Property Name="Date" Type="datetime2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="nvarchar" Nullable="false" MaxLength="10" />
+          <Property Name="Password" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="12" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="12" />
+        </EntityType>
+        <Association Name="FK_Accounts_CreditInst">
+          <End Role="Banks" Type="HomeBankModel.Store.Banks" Multiplicity="1" />
+          <End Role="Accounts" Type="HomeBankModel.Store.Accounts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Banks">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Accounts">
+              <PropertyRef Name="CreditInst" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Categories_Categories">
+          <End Role="Categories" Type="HomeBankModel.Store.Categories" Multiplicity="0..1" />
+          <End Role="Categories1" Type="HomeBankModel.Store.Categories" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Categories1">
+              <PropertyRef Name="BelongsTo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CreditInst_Users">
+          <End Role="Users" Type="HomeBankModel.Store.Users" Multiplicity="0..1" />
+          <End Role="Banks" Type="HomeBankModel.Store.Banks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Banks">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transactions_Accounts">
+          <End Role="Accounts" Type="HomeBankModel.Store.Accounts" Multiplicity="1" />
+          <End Role="Transactions" Type="HomeBankModel.Store.Transactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transactions">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transactions_Categories">
+          <End Role="Categories" Type="HomeBankModel.Store.Categories" Multiplicity="0..1" />
+          <End Role="Transactions" Type="HomeBankModel.Store.Transactions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transactions">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transfers_Accounts">
+          <End Role="Accounts" Type="HomeBankModel.Store.Accounts" Multiplicity="1" />
+          <End Role="Transfers" Type="HomeBankModel.Store.Transfers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transfers">
+              <PropertyRef Name="AccountFrom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transfers_Accounts1">
+          <End Role="Accounts" Type="HomeBankModel.Store.Accounts" Multiplicity="1" />
+          <End Role="Transfers" Type="HomeBankModel.Store.Transfers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transfers">
+              <PropertyRef Name="AccountTo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="AddNewAccount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Balance" Type="smallmoney" Mode="In" />
+          <Parameter Name="CreditInstID" Type="int" Mode="In" />
+          <Parameter Name="date" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="AddNewBank" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="int" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="AddNewCategory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="UserID" Type="int" Mode="In" />
+          <Parameter Name="type" Type="bit" Mode="In" />
+          <Parameter Name="BelongsTo" Type="int" Mode="In" />
+        </Function>
+        <Function Name="AddNewExpence" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccoutnID" Type="int" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Amount" Type="smallmoney" Mode="In" />
+          <Parameter Name="CategoryID" Type="int" Mode="In" />
+          <Parameter Name="Date" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="AddNewIncome" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccoutnID" Type="int" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Amount" Type="smallmoney" Mode="In" />
+          <Parameter Name="CategoryID" Type="int" Mode="In" />
+          <Parameter Name="Date" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="AddNewTrans" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccoutnID" Type="int" Mode="In" />
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+          <Parameter Name="Amount" Type="smallmoney" Mode="In" />
+          <Parameter Name="CategoryID" Type="int" Mode="In" />
+          <Parameter Name="Date" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="AddNewUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Login" Type="nvarchar" Mode="In" />
+          <Parameter Name="Password" Type="nvarchar" Mode="In" />
+          <Parameter Name="FirstName" Type="nvarchar" Mode="In" />
+          <Parameter Name="LastName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="GetAccountByID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetAllAccounts" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetAllBanks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetAllCategories" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetallExpenceCats" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetAllIncomeCats" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetAllMainCategories" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetAllTransByCategory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetAllTransForAccountAndDate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccountID" Type="int" Mode="In" />
+          <Parameter Name="StartDate" Type="datetime2" Mode="In" />
+          <Parameter Name="EndDate" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="GetSubCategoriesByID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="hashedPassword" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="GetUserIDByAccountID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccountID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="RemoveAccountByID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="RemoveCategoryByID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="RemoveTransByID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="SearchAccountByName" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Name" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="Transfer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AccountFrom" Type="int" Mode="In" />
+          <Parameter Name="AccountTo" Type="int" Mode="In" />
+          <Parameter Name="Name" Type="varchar" Mode="In" />
+          <Parameter Name="Amount" Type="smallmoney" Mode="In" />
+          <Parameter Name="Date" Type="datetime2" Mode="In" />
+        </Function>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="HomeBankModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="HBContext" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="HomeBankModel.Account" />
+          <EntitySet Name="Categories" EntityType="HomeBankModel.Category" />
+          <EntitySet Name="Transactions" EntityType="HomeBankModel.Transaction" />
+          <EntitySet Name="Users" EntityType="HomeBankModel.User" />
+          <AssociationSet Name="FK_Transactions_Accounts" Association="HomeBankModel.FK_Transactions_Accounts">
+            <End Role="Accounts" EntitySet="Accounts" />
+            <End Role="Transactions" EntitySet="Transactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Categories_Categories" Association="HomeBankModel.FK_Categories_Categories">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Categories1" EntitySet="Categories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transactions_Categories" Association="HomeBankModel.FK_Transactions_Categories">
+            <End Role="Categories" EntitySet="Categories" />
+            <End Role="Transactions" EntitySet="Transactions" />
+          </AssociationSet>
+          <FunctionImport Name="AddNewAccount">
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Balance" Mode="In" Type="Decimal" />
+            <Parameter Name="CreditInstID" Mode="In" Type="Int32" />
+            <Parameter Name="date" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="AddNewCategory" ReturnType="Collection(Int32)">
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
+            <Parameter Name="type" Mode="In" Type="Boolean" />
+            <Parameter Name="BelongsTo" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="AddNewExpence">
+            <Parameter Name="AccoutnID" Mode="In" Type="Int32" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Amount" Mode="In" Type="Decimal" />
+            <Parameter Name="CategoryID" Mode="In" Type="Int32" />
+            <Parameter Name="Date" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="AddNewIncome">
+            <Parameter Name="AccoutnID" Mode="In" Type="Int32" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Amount" Mode="In" Type="Decimal" />
+            <Parameter Name="CategoryID" Mode="In" Type="Int32" />
+            <Parameter Name="Date" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="AddNewTrans">
+            <Parameter Name="AccoutnID" Mode="In" Type="Int32" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Amount" Mode="In" Type="Decimal" />
+            <Parameter Name="CategoryID" Mode="In" Type="Int32" />
+            <Parameter Name="Date" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="AddNewUser">
+            <Parameter Name="Login" Mode="In" Type="String" />
+            <Parameter Name="Password" Mode="In" Type="String" />
+            <Parameter Name="FirstName" Mode="In" Type="String" />
+            <Parameter Name="LastName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetAccountByID" EntitySet="Accounts" ReturnType="Collection(HomeBankModel.Account)">
+          <Parameter Name="ID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetAllAccounts" ReturnType="Collection(HomeBankModel.GetAllAccounts_Result)">
+          <Parameter Name="UserID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetAllCategories" EntitySet="Categories" ReturnType="Collection(HomeBankModel.Category)" />
+          <FunctionImport Name="GetallExpenceCats" EntitySet="Categories" ReturnType="Collection(HomeBankModel.Category)" />
+          <FunctionImport Name="GetAllIncomeCats" EntitySet="Categories" ReturnType="Collection(HomeBankModel.Category)" />
+          <FunctionImport Name="GetAllMainCategories" EntitySet="Categories" ReturnType="Collection(HomeBankModel.Category)" >
+          <Parameter Name="UserID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetAllTransByCategory" EntitySet="Transactions" ReturnType="Collection(HomeBankModel.Transaction)">
+          <Parameter Name="ID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetAllTransForAccountAndDate" ReturnType="Collection(HomeBankModel.GetAllTransForAccountAndDate_Result)">
+            <Parameter Name="AccountID" Mode="In" Type="Int32" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EndDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="GetSubCategoriesByID" EntitySet="Categories" ReturnType="Collection(HomeBankModel.Category)">
+          <Parameter Name="ID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetUser" EntitySet="Users" ReturnType="Collection(HomeBankModel.User)">
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="hashedPassword" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="RemoveAccountByID">
+          <Parameter Name="ID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="RemoveCategoryByID">
+          <Parameter Name="ID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="RemoveTransByID">
+          <Parameter Name="ID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="SearchAccountByName" ReturnType="Collection(HomeBankModel.SearchAccountByName_Result)">
+          <Parameter Name="Name" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetUserIDByAccountID" ReturnType="Collection(Int32)">
+          <Parameter Name="AccountID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="Banks" EntityType="HomeBankModel.Bank" />
+          <AssociationSet Name="FK_Accounts_CreditInst1" Association="HomeBankModel.FK_Accounts_CreditInst1">
+            <End Role="Bank" EntitySet="Banks" />
+            <End Role="Account" EntitySet="Accounts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CreditInst_Users1" Association="HomeBankModel.FK_CreditInst_Users1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Bank" EntitySet="Banks" />
+          </AssociationSet>
+          <FunctionImport Name="AddNewBank" ReturnType="Collection(Int32)">
+            <Parameter Name="UserID" Mode="In" Type="Int32" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetAllBanks" ReturnType="Collection(HomeBankModel.GetAllBanks1_Result)">
+          <Parameter Name="UserID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="Transfer">
+            <Parameter Name="AccountFrom" Mode="In" Type="Int32" />
+            <Parameter Name="AccountTo" Mode="In" Type="Int32" />
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Amount" Mode="In" Type="Decimal" />
+            <Parameter Name="Date" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="Transfers" EntityType="HomeBankModel.Transfer" />
+          <AssociationSet Name="FK_Transfers_Accounts" Association="HomeBankModel.FK_Transfers_Accounts">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Transfer" EntitySet="Transfers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transfers_Accounts1" Association="HomeBankModel.FK_Transfers_Accounts1">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="Transfer" EntitySet="Transfers" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="CreditInst" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Balance" Type="Decimal" Nullable="false" Precision="10" Scale="4" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="LastModDate" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="Transactions" Relationship="HomeBankModel.FK_Transactions_Accounts" FromRole="Accounts" ToRole="Transactions" />
+          <NavigationProperty Name="Bank" Relationship="HomeBankModel.FK_Accounts_CreditInst1" FromRole="Account" ToRole="Bank" />
+          <NavigationProperty Name="Transfers" Relationship="HomeBankModel.FK_Transfers_Accounts" FromRole="Account" ToRole="Transfer" />
+          <NavigationProperty Name="Transfers1" Relationship="HomeBankModel.FK_Transfers_Accounts1" FromRole="Account" ToRole="Transfer" />
+        </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Type" Type="Boolean" Nullable="false" />
+          <Property Name="BelongsTo" Type="Int32" />
+          <NavigationProperty Name="Categories1" Relationship="HomeBankModel.FK_Categories_Categories" FromRole="Categories" ToRole="Categories1" />
+          <NavigationProperty Name="Category1" Relationship="HomeBankModel.FK_Categories_Categories" FromRole="Categories1" ToRole="Categories" />
+          <NavigationProperty Name="Transactions" Relationship="HomeBankModel.FK_Transactions_Categories" FromRole="Categories" ToRole="Transactions" />
+        </EntityType>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Amount" Type="Decimal" Nullable="false" Precision="10" Scale="4" />
+          <Property Name="CategoryID" Type="Int32" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Description" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Account" Relationship="HomeBankModel.FK_Transactions_Accounts" FromRole="Transactions" ToRole="Accounts" />
+          <NavigationProperty Name="Category" Relationship="HomeBankModel.FK_Transactions_Categories" FromRole="Transactions" ToRole="Categories" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="10" Unicode="true" FixedLength="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="FirstName" Type="String" MaxLength="12" Unicode="true" FixedLength="false" />
+          <Property Name="LastName" Type="String" MaxLength="12" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Banks" Relationship="HomeBankModel.FK_CreditInst_Users1" FromRole="User" ToRole="Bank" />
+        </EntityType>
+        <Association Name="FK_Transactions_Accounts">
+          <End Role="Accounts" Type="HomeBankModel.Account" Multiplicity="1" />
+          <End Role="Transactions" Type="HomeBankModel.Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Accounts">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transactions">
+              <PropertyRef Name="AccountID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Categories_Categories">
+          <End Role="Categories" Type="HomeBankModel.Category" Multiplicity="0..1" />
+          <End Role="Categories1" Type="HomeBankModel.Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Categories1">
+              <PropertyRef Name="BelongsTo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transactions_Categories">
+          <End Role="Categories" Type="HomeBankModel.Category" Multiplicity="0..1" />
+          <End Role="Transactions" Type="HomeBankModel.Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Categories">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transactions">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="GetAccountByID_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="CreditInst" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Decimal" Name="Balance" Nullable="false" Precision="10" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" />
+          <Property Type="DateTime" Name="LastModDate" Nullable="true" />
+          <Property Type="Int32" Name="UserID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetAllAccounts_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Decimal" Name="Balance" Nullable="false" Precision="10" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" />
+          <Property Type="DateTime" Name="LastModDate" Nullable="true" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="64" />
+          <Property Type="Int32" Name="CreditInst" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetAllCategories_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="UserID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Boolean" Name="Type" Nullable="false" />
+          <Property Type="Int32" Name="BelongsTo" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetallExpenceCats_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="UserID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Boolean" Name="Type" Nullable="false" />
+          <Property Type="Int32" Name="BelongsTo" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetAllIncomeCats_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="UserID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Boolean" Name="Type" Nullable="false" />
+          <Property Type="Int32" Name="BelongsTo" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetAllMainCategories_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="UserID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Boolean" Name="Type" Nullable="false" />
+          <Property Type="Int32" Name="BelongsTo" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetAllTransByCategory_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="AccountID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Decimal" Name="Amount" Nullable="false" Precision="10" />
+          <Property Type="Int32" Name="CategoryID" Nullable="true" />
+          <Property Type="DateTime" Name="Date" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="100" />
+        </ComplexType>
+        <ComplexType Name="GetAllTransForAccountAndDate_Result">
+          <Property Type="DateTime" Name="Date" Nullable="false" />
+          <Property Type="Decimal" Name="Amount" Nullable="false" Precision="10" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Category" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetSubCategoriesByID_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="UserID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Boolean" Name="Type" Nullable="false" />
+          <Property Type="Int32" Name="BelongsTo" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetUser_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="UserName" Nullable="false" MaxLength="10" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="FirstName" Nullable="true" MaxLength="12" />
+          <Property Type="String" Name="LastName" Nullable="true" MaxLength="12" />
+        </ComplexType>
+        <ComplexType Name="SearchAccountByName_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Int32" Name="CreditInst" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Decimal" Name="Balance" Nullable="false" Precision="10" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" />
+          <Property Type="DateTime" Name="LastModDate" Nullable="true" />
+          <Property Type="Int32" Name="UserID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetAllCreditInsts_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="12" />
+        </ComplexType>
+        <EntityType Name="Bank">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="UserID" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="12" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Accounts" Relationship="HomeBankModel.FK_Accounts_CreditInst1" FromRole="Bank" ToRole="Account" />
+          <NavigationProperty Name="User" Relationship="HomeBankModel.FK_CreditInst_Users1" FromRole="Bank" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Accounts_CreditInst1">
+          <End Type="HomeBankModel.Bank" Role="Bank" Multiplicity="1" />
+          <End Type="HomeBankModel.Account" Role="Account" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Bank">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Account">
+              <PropertyRef Name="CreditInst" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CreditInst_Users1">
+          <End Type="HomeBankModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="HomeBankModel.Bank" Role="Bank" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Bank">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="GetAllBanks1_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="12" />
+        </ComplexType>
+        <EntityType Name="Transfer">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="AccountFrom" Nullable="false" />
+          <Property Type="Int32" Name="AccountTo" Nullable="false" />
+          <Property Type="Decimal" Name="Amount" Nullable="false" Precision="10" Scale="4" />
+          <Property Type="DateTime" Name="Date" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Account" Relationship="HomeBankModel.FK_Transfers_Accounts" FromRole="Transfer" ToRole="Account" />
+          <NavigationProperty Name="Account1" Relationship="HomeBankModel.FK_Transfers_Accounts1" FromRole="Transfer" ToRole="Account" />
+        </EntityType>
+        <Association Name="FK_Transfers_Accounts">
+          <End Type="HomeBankModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="HomeBankModel.Transfer" Role="Transfer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transfer">
+              <PropertyRef Name="AccountFrom" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transfers_Accounts1">
+          <End Type="HomeBankModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="HomeBankModel.Transfer" Role="Transfer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Transfer">
+              <PropertyRef Name="AccountTo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="HomeBankModelStoreContainer" CdmEntityContainer="HBContext">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="HomeBankModel.Account">
+              <MappingFragment StoreEntitySet="Accounts">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="CreditInst" ColumnName="CreditInst" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastModDate" ColumnName="LastModDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="HomeBankModel.Category">
+              <MappingFragment StoreEntitySet="Categories">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="BelongsTo" ColumnName="BelongsTo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transactions">
+            <EntityTypeMapping TypeName="HomeBankModel.Transaction">
+              <MappingFragment StoreEntitySet="Transactions">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="AccountID" ColumnName="AccountID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="HomeBankModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+            <EntityTypeMapping TypeName="HomeBankModel.User">
+              <ModificationFunctionMapping>
+                <InsertFunction FunctionName="HomeBankModel.Store.AddNewUser">
+                  <ScalarProperty Name="UserName" ParameterName="Login" />
+                  <ScalarProperty Name="LastName" ParameterName="LastName" />
+                  <ScalarProperty Name="FirstName" ParameterName="FirstName" />
+                  <ScalarProperty Name="Password" ParameterName="Password" />
+                </InsertFunction>
+              </ModificationFunctionMapping>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="AddNewAccount" FunctionName="HomeBankModel.Store.AddNewAccount" />
+          <FunctionImportMapping FunctionImportName="AddNewCategory" FunctionName="HomeBankModel.Store.AddNewCategory" />
+          <FunctionImportMapping FunctionImportName="AddNewExpence" FunctionName="HomeBankModel.Store.AddNewExpence" />
+          <FunctionImportMapping FunctionImportName="AddNewIncome" FunctionName="HomeBankModel.Store.AddNewIncome" />
+          <FunctionImportMapping FunctionImportName="AddNewTrans" FunctionName="HomeBankModel.Store.AddNewTrans" />
+          <FunctionImportMapping FunctionImportName="AddNewUser" FunctionName="HomeBankModel.Store.AddNewUser" />
+          <FunctionImportMapping FunctionImportName="GetAccountByID" FunctionName="HomeBankModel.Store.GetAccountByID">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetAllAccounts" FunctionName="HomeBankModel.Store.GetAllAccounts">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="HomeBankModel.GetAllAccounts_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastModDate" ColumnName="LastModDate" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CreditInst" ColumnName="CreditInst" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetAllCategories" FunctionName="HomeBankModel.Store.GetAllCategories">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetallExpenceCats" FunctionName="HomeBankModel.Store.GetallExpenceCats">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetAllIncomeCats" FunctionName="HomeBankModel.Store.GetAllIncomeCats">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetAllMainCategories" FunctionName="HomeBankModel.Store.GetAllMainCategories">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetAllTransByCategory" FunctionName="HomeBankModel.Store.GetAllTransByCategory">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetAllTransForAccountAndDate" FunctionName="HomeBankModel.Store.GetAllTransForAccountAndDate">
+          <ResultMapping>
+              <ComplexTypeMapping TypeName="HomeBankModel.GetAllTransForAccountAndDate_Result">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetSubCategoriesByID" FunctionName="HomeBankModel.Store.GetSubCategoriesByID">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetUser" FunctionName="HomeBankModel.Store.GetUser">
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="RemoveAccountByID" FunctionName="HomeBankModel.Store.RemoveAccountByID" />
+          <FunctionImportMapping FunctionImportName="RemoveCategoryByID" FunctionName="HomeBankModel.Store.RemoveCategoryByID" />
+          <FunctionImportMapping FunctionImportName="RemoveTransByID" FunctionName="HomeBankModel.Store.RemoveTransByID" />
+          <FunctionImportMapping FunctionImportName="SearchAccountByName" FunctionName="HomeBankModel.Store.SearchAccountByName">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="HomeBankModel.SearchAccountByName_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="CreditInst" ColumnName="CreditInst" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="LastModDate" ColumnName="LastModDate" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetUserIDByAccountID" FunctionName="HomeBankModel.Store.GetUserIDByAccountID" />
+          <EntitySetMapping Name="Banks">
+            <EntityTypeMapping TypeName="HomeBankModel.Bank">
+              <MappingFragment StoreEntitySet="Banks">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="AddNewBank" FunctionName="HomeBankModel.Store.AddNewBank" />
+          <FunctionImportMapping FunctionImportName="GetAllBanks" FunctionName="HomeBankModel.Store.GetAllBanks" >
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="HomeBankModel.GetAllBanks1_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="Transfer" FunctionName="HomeBankModel.Store.Transfer" />
+          <EntitySetMapping Name="Transfers">
+            <EntityTypeMapping TypeName="HomeBankModel.Transfer">
+              <MappingFragment StoreEntitySet="Transfers">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="AccountTo" ColumnName="AccountTo" />
+                <ScalarProperty Name="AccountFrom" ColumnName="AccountFrom" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
