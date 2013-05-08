@@ -23,6 +23,11 @@ namespace HBTest
 
         private void button1_Click(object sender, EventArgs e)
         {
+            Login();
+        }
+
+        private void Login()
+        {
             try
             {
                 string userName = txtLogin.Text.ToLower().Trim();
@@ -34,7 +39,7 @@ namespace HBTest
 
                 using (var context = new HBContext())
                 {
-                    
+
                     if (context.GetUser(userName, hashedPassword).Count() > 0)
                         loginUser = context.GetUser(userName, hashedPassword).ToList()[0];
                     if (loginUser != null)
@@ -66,6 +71,14 @@ namespace HBTest
         private void txtLogin_KeyPress(object sender, KeyPressEventArgs e)
         {
             
+        }
+
+        private void txtPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                Login();
+            }
         }
 
         

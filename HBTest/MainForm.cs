@@ -399,6 +399,14 @@ namespace HBTest
             frmReports rep = new frmReports(user.ID);
             rep.Show();
         }
+        // manage categories toolStripMenu event
+        private void manageCategoriesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //create new form object
+            frmManageCategories frmManCat = new frmManageCategories(user.ID);
+            //show dialog
+            frmManCat.ShowDialog();
+        }
 
 
 
