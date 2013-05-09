@@ -10,12 +10,8 @@ namespace HBTest
     {
         public static string script = @"USE [master]
 GO
-/****** Object:  Database [HomeBank]    Script Date: 4/16/2013 7:13:42 AM ******/
-CREATE DATABASE [HomeBank]
- CONTAINMENT = NONE
- 
-GO
-ALTER DATABASE [HomeBank] SET COMPATIBILITY_LEVEL = 110
+/****** Object:  Database [HomeBank]    Script Date: 5/9/2013 9:59:51 AM ******/
+CREATE DATABASE [HomeBank] 
 GO
 IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
 begin
@@ -76,15 +72,11 @@ ALTER DATABASE [HomeBank] SET PAGE_VERIFY CHECKSUM
 GO
 ALTER DATABASE [HomeBank] SET DB_CHAINING OFF 
 GO
-ALTER DATABASE [HomeBank] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
-GO
-ALTER DATABASE [HomeBank] SET TARGET_RECOVERY_TIME = 0 SECONDS 
-GO
 EXEC sys.sp_db_vardecimal_storage_format N'HomeBank', N'ON'
 GO
 USE [HomeBank]
 GO
-/****** Object:  StoredProcedure [dbo].[AddNewAccount]    Script Date: 4/16/2013 7:13:42 AM ******/
+/****** Object:  StoredProcedure [dbo].[AddNewAccount]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -100,37 +92,37 @@ BEGIN
 	ELSE RETURN -1
 END
 GO
-/****** Object:  StoredProcedure [dbo].[AddNewCategory]    Script Date: 4/16/2013 7:13:42 AM ******/
+/****** Object:  StoredProcedure [dbo].[AddNewBank]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROC [dbo].[AddNewCategory] @Name nvarchar(50),@type bit, @BelongsTo int = null
+CREATE PROC [dbo].[AddNewBank] @UserID int, @Name nvarchar(12)
+AS
+INSERT INTO Banks( UserID, Name) VALUES (@UserID, @Name)
+
+SELECT CAST(IDENT_CURRENT( 'Banks' ) AS int)
+GO
+/****** Object:  StoredProcedure [dbo].[AddNewCategory]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[AddNewCategory] @Name nvarchar(50),@UserID int, @type bit, @BelongsTo int = null
 AS
 	IF (@BelongsTo IS NULL)
-		INSERT INTO Categories( Name, Type)
-			VALUES (@Name, @type)
+		INSERT INTO Categories( Name, Type, UserID)
+			VALUES (@Name, @type, @UserID)
 	ELSE 
 		IF EXISTS(SELECT *FROM Categories WHERE ID = @BelongsTo) AND
 			@type = (SELECT type FROM Categories WHERE id = @BelongsTo)
-			INSERT INTO Categories( Name, Type, BelongsTo)
-				VALUES (@Name, @type, @BelongsTo)
+			INSERT INTO Categories( Name, Type, UserID, BelongsTo)
+				VALUES (@Name, @type, @UserID, @BelongsTo)
 		ELSE
 			RETURN -2
+	SELECT CAST(IDENT_CURRENT( 'Categories' ) AS int)
 GO
-/****** Object:  StoredProcedure [dbo].[AddNewCreditInst]    Script Date: 4/16/2013 7:13:42 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE PROC [dbo].[AddNewCreditInst] @UserID int, @Name nvarchar(12)
-AS
-INSERT INTO CreditInst( UserID, Name) VALUES (@UserID, @Name)
-
-SELECT IDENT_CURRENT( 'CreditInst' )
-
-GO
-/****** Object:  StoredProcedure [dbo].[AddNewExpence]    Script Date: 4/16/2013 7:13:42 AM ******/
+/****** Object:  StoredProcedure [dbo].[AddNewExpence]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -157,7 +149,7 @@ AS
 	INSERT INTO Transactions(AccountID,Amount, Name, CategoryID,Date)
 		VALUES( @AccoutnID,@Amount,@Name,@CategoryID,@Date)
 GO
-/****** Object:  StoredProcedure [dbo].[AddNewIncome]    Script Date: 4/16/2013 7:13:42 AM ******/
+/****** Object:  StoredProcedure [dbo].[AddNewIncome]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -182,7 +174,7 @@ AS
 	INSERT INTO Transactions(AccountID,Amount, Name, CategoryID,Date)
 		VALUES( @AccoutnID,@Amount,@Name,@CategoryID,@Date)
 GO
-/****** Object:  StoredProcedure [dbo].[AddNewTrans]    Script Date: 4/16/2013 7:13:42 AM ******/
+/****** Object:  StoredProcedure [dbo].[AddNewTrans]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -199,7 +191,7 @@ AS
 	INSERT INTO Transactions(AccountID,Amount, Name, CategoryID,Date)
 		VALUES( @AccoutnID,@Amount,@Name,@CategoryID,@Date)
 GO
-/****** Object:  StoredProcedure [dbo].[AddNewUser]    Script Date: 4/16/2013 7:13:42 AM ******/
+/****** Object:  StoredProcedure [dbo].[AddNewUser]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -210,11 +202,17 @@ CREATE PROC [dbo].[AddNewUser]
 	@FirstName nvarchar(12)=null,
 	@LastName nvarchar(12)= null
 AS
+BEGIN
 
-	INSERT INTO Users(UserName,Password,FirstName,LastName)
+	if (not exists(select * from Users where UserName = @login))
+		INSERT INTO Users(UserName,Password,FirstName,LastName)
 		VALUES (@Login,@Password,@FirstName, @LastName)
+	else 
+		return -1
+	
+END
 GO
-/****** Object:  StoredProcedure [dbo].[GetAccountByID]    Script Date: 4/16/2013 7:13:42 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetAccountByID]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -224,21 +222,32 @@ AS
 	SELECT * FROM Accounts WHERE ID = @ID
 	IF (@@ROWCOUNT < 1) RETURN -1
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllAccounts]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetAllAccounts]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE PROC [dbo].[GetAllAccounts] @UserID int
 AS
-	SELECT a.ID,a.CreateDate, a.LastModDate, ci.Name + ': ' + a.Name AS 'Name', CreditInst, a.Balance
-		FROM Accounts a INNER JOIN CreditInst ci
-		ON a.CreditInst = ci.ID
-		INNER JOIN Users u ON u.ID = ci.UserID
+	SELECT a.ID,a.CreateDate, a.LastModDate, b.Name + ': ' + a.Name AS 'Name', CreditInst, a.Balance
+		FROM Accounts a INNER JOIN Banks b
+		ON a.CreditInst = b.ID
+		INNER JOIN Users u ON u.ID = b.UserID
 		WHERE u.ID = @UserID
 	
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllCategories]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetAllBanks]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[GetAllBanks] @UserID int
+AS
+SELECT ID, Name 
+	FROM Banks
+	WHERE UserID = @UserID
+GO
+/****** Object:  StoredProcedure [dbo].[GetAllCategories]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -248,18 +257,7 @@ AS
 	SELECT * FROM Categories
 
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllCreditInsts]    Script Date: 4/16/2013 7:13:43 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE PROC [dbo].[GetAllCreditInsts] @UserID int
-AS
-SELECT ID, Name 
-	FROM CreditInst
-	WHERE UserID = @UserID
-GO
-/****** Object:  StoredProcedure [dbo].[GetallExpenceCats]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetallExpenceCats]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -267,27 +265,28 @@ GO
 CREATE PROC [dbo].[GetallExpenceCats]
 
 AS	
-	SELECT * FROM Categories WHERE type = 0
+	SELECT * FROM Categories WHERE type = 0 AND ID >= 0
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllIncomeCats]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetAllIncomeCats]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE PROC [dbo].[GetAllIncomeCats]
 AS	
-	SELECT * FROM Categories WHERE type = 1
+	SELECT * FROM Categories WHERE type = 1 AND ID >=0
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllMainCategories]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetAllMainCategories]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROC [dbo].[GetAllMainCategories]
+CREATE PROC [dbo].[GetAllMainCategories] @UserID int
 AS	
-	SELECT * FROM Categories WHERE BelongsTo IS NULL
+	SELECT * FROM Categories 
+		WHERE BelongsTo IS NULL AND UserID = @UserID AND ID >=0
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllTransByCategory]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetAllTransByCategory]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -300,7 +299,7 @@ AS
 									(SELECT ID FROM Categories 
 										WHERE BelongsTo = @ID)
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllTransForAccountAndDate]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetAllTransForAccountAndDate]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -316,14 +315,14 @@ IF (NOT EXISTS(SELECT * FROM Accounts WHERE ID = @AccountID))
 		PRINT('Account with id of '+CAST(@AccountID AS VARCHAR(7)) +' does not exists.')
 		RETURN -1
 	END
-	SELECT t.Date,t.Amount,c.Name ,t.Name AS 'Category'
+	SELECT t.ID, t.Date,t.Amount,c.Name ,t.Name AS 'Category'
 		FROM Transactions t
 		INNER JOIN Categories c 
 		ON t.CategoryID = c.ID
 		WHERE AccountID = @AccountID AND Date BETWEEN @StartDate AND @EndDate
 END
 GO
-/****** Object:  StoredProcedure [dbo].[GetSubCategoriesByID]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetSubCategoriesByID]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -333,7 +332,7 @@ AS
 	SELECT * FROM Categories WHERE BelongsTo = @ID
 
 GO
-/****** Object:  StoredProcedure [dbo].[GetUser]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetUser]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -345,17 +344,32 @@ BEGIN
 	SELECT * FROM Users WHERE UserName = @UserName AND Password = @hashedPassword 
 END
 GO
-/****** Object:  StoredProcedure [dbo].[RemoveAccountByID]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[GetUserIDByAccountID]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[GetUserIDByAccountID] @AccountID int
+AS
+SELECT b.UserID  
+	FROM Accounts a INNER JOIN Banks b
+	ON a.CreditInst = b.ID
+	WHERE a.ID = @AccountID
+IF (@@ROWCOUNT =0) SELECT -1
+GO
+/****** Object:  StoredProcedure [dbo].[RemoveAccountByID]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE PROC [dbo].[RemoveAccountByID] @ID int
 AS
+	ALTER TABLE Transactions NOCHECK CONSTRAINT FK_Transactions_Accounts
 	DELETE Accounts WHERE ID = @ID
+	ALTER TABLE Transactions CHECK CONSTRAINT FK_Transactions_Accounts
 	IF (@@ROWCOUNT < 1) RETURN -1
 GO
-/****** Object:  StoredProcedure [dbo].[RemoveCategoryByID]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[RemoveCategoryByID]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -367,16 +381,28 @@ AS
 	-- remove category
 	DELETE Categories WHERE ID = @ID
 GO
-/****** Object:  StoredProcedure [dbo].[RemoveTransByID]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[RemoveTransByID]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE PROC [dbo].[RemoveTransByID] @ID int
 AS 
+BEGIN
+	DECLARE @CatID int
+
+	SELECT @CatID = CategoryID FROM Transactions
+		WHERE ID = @ID
+
+	IF (@CatID = -200)
+		DELETE Transactions WHERE ID = (@ID + 1)
+	IF (@CatID = -201)
+		DELETE Transactions WHERE ID = (@ID -1)
+
 	DELETE Transactions WHERE ID = @ID
+END
 GO
-/****** Object:  StoredProcedure [dbo].[SearchAccountByName]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[SearchAccountByName]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -386,7 +412,23 @@ AS
 	SELECT * FROM Accounts WHERE Name like '%'+@Name+'%'
 	IF (@@ROWCOUNT < 1) RETURN -1
 GO
-/****** Object:  Table [dbo].[Accounts]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  StoredProcedure [dbo].[Transfer]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[Transfer] @AccountFrom int, @AccountTo int,@Name varchar(50), @Amount smallmoney, @Date datetime2
+AS
+BEGIN TRAN
+	exec AddNewExpence @AccountFrom, @Name, @Amount,'-200',@Date
+	exec AddNewIncome @AccountTo, @Name,@Amount,'-201',@Date
+	IF @@ERROR > 0
+		ROLLBACK 
+	ELSE 
+		COMMIT TRAN
+	
+GO
+/****** Object:  Table [dbo].[Accounts]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -405,7 +447,23 @@ CREATE TABLE [dbo].[Accounts](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Categories]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  Table [dbo].[Banks]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Banks](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[UserID] [int] NULL,
+	[Name] [nvarchar](12) NOT NULL,
+ CONSTRAINT [PK_CreditInst] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Categories]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -423,23 +481,7 @@ CREATE TABLE [dbo].[Categories](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[CreditInst]    Script Date: 4/16/2013 7:13:43 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[CreditInst](
-	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[UserID] [int] NULL,
-	[Name] [nvarchar](12) NOT NULL,
- CONSTRAINT [PK_CreditInst] PRIMARY KEY CLUSTERED 
-(
-	[ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-
-GO
-/****** Object:  Table [dbo].[Transactions]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  Table [dbo].[Transactions]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -459,7 +501,26 @@ CREATE TABLE [dbo].[Transactions](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 4/16/2013 7:13:43 AM ******/
+/****** Object:  Table [dbo].[Transfers]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Transfers](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[AccountFrom] [int] NOT NULL,
+	[AccountTo] [int] NOT NULL,
+	[Amount] [smallmoney] NOT NULL,
+	[Date] [datetime2](7) NOT NULL,
+ CONSTRAINT [PK_Transfers] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 5/9/2013 9:59:51 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -482,21 +543,21 @@ GO
 ALTER TABLE [dbo].[Transactions] ADD  CONSTRAINT [DF_Transactions_Date]  DEFAULT (getdate()) FOR [Date]
 GO
 ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_CreditInst] FOREIGN KEY([CreditInst])
-REFERENCES [dbo].[CreditInst] ([ID])
+REFERENCES [dbo].[Banks] ([ID])
 GO
 ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_CreditInst]
+GO
+ALTER TABLE [dbo].[Banks]  WITH CHECK ADD  CONSTRAINT [FK_CreditInst_Users] FOREIGN KEY([UserID])
+REFERENCES [dbo].[Users] ([ID])
+GO
+ALTER TABLE [dbo].[Banks] CHECK CONSTRAINT [FK_CreditInst_Users]
 GO
 ALTER TABLE [dbo].[Categories]  WITH CHECK ADD  CONSTRAINT [FK_Categories_Categories] FOREIGN KEY([BelongsTo])
 REFERENCES [dbo].[Categories] ([ID])
 GO
 ALTER TABLE [dbo].[Categories] CHECK CONSTRAINT [FK_Categories_Categories]
 GO
-ALTER TABLE [dbo].[CreditInst]  WITH CHECK ADD  CONSTRAINT [FK_CreditInst_Users] FOREIGN KEY([UserID])
-REFERENCES [dbo].[Users] ([ID])
-GO
-ALTER TABLE [dbo].[CreditInst] CHECK CONSTRAINT [FK_CreditInst_Users]
-GO
-ALTER TABLE [dbo].[Transactions]  WITH CHECK ADD  CONSTRAINT [FK_Transactions_Accounts] FOREIGN KEY([AccountID])
+ALTER TABLE [dbo].[Transactions]  WITH NOCHECK ADD  CONSTRAINT [FK_Transactions_Accounts] FOREIGN KEY([AccountID])
 REFERENCES [dbo].[Accounts] ([ID])
 GO
 ALTER TABLE [dbo].[Transactions] CHECK CONSTRAINT [FK_Transactions_Accounts]
@@ -506,9 +567,124 @@ REFERENCES [dbo].[Categories] ([ID])
 GO
 ALTER TABLE [dbo].[Transactions] CHECK CONSTRAINT [FK_Transactions_Categories]
 GO
+ALTER TABLE [dbo].[Transfers]  WITH CHECK ADD  CONSTRAINT [FK_Transfers_Accounts] FOREIGN KEY([AccountFrom])
+REFERENCES [dbo].[Accounts] ([ID])
+GO
+ALTER TABLE [dbo].[Transfers] CHECK CONSTRAINT [FK_Transfers_Accounts]
+GO
+ALTER TABLE [dbo].[Transfers]  WITH CHECK ADD  CONSTRAINT [FK_Transfers_Accounts1] FOREIGN KEY([AccountTo])
+REFERENCES [dbo].[Accounts] ([ID])
+GO
+ALTER TABLE [dbo].[Transfers] CHECK CONSTRAINT [FK_Transfers_Accounts1]
+GO
+/****** Object:  Trigger [dbo].[on_acc_delete]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[on_acc_delete] ON [dbo].[Accounts]
+FOR delete AS
+DECLARE @AccID int
+SELECT @AccID = ID FROM deleted
+DELETE Transactions WHERE AccountID = @AccID
+GO
+/****** Object:  Trigger [dbo].[update_date]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE trigger [dbo].[update_date]
+ON [dbo].[Accounts] FOR update As
+	Update Accounts SET LastModDate = GETDATE() 
+		WHERE id = (SELECT id FROM deleted)
+
+GO
+/****** Object:  Trigger [dbo].[on_delete_set_trans_to_null]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[on_delete_set_trans_to_null]
+ON [dbo].[Categories] FOR delete AS
+BEGIN 
+	DECLARE @CatID int
+	SELECT @CatID = ID FROM deleted
+	UPDATE Transactions SET CategoryID = null WHERE CategoryID = @CatID
+END
+
+GO
+/****** Object:  Trigger [dbo].[update_account]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[update_account]
+ON [dbo].[Transactions] for insert
+as
+BEGIN
+
+	DECLARE @Amount smallmoney, @AccountID int
+
+	SELECT @Amount = Amount, @AccountID = AccountID FROM inserted
+
+	UPDATE Accounts SET Balance += @Amount WHERE ID = @AccountID
+
+END
+GO
+/****** Object:  Trigger [dbo].[update_account_del]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[update_account_del]
+
+ON [dbo].[Transactions] FOR delete
+
+AS
+
+BEGIN
+
+	DECLARE @Amount smallmoney, @AccountID int
+
+	SELECT @Amount = Amount, @AccountID = AccountID FROM deleted
+
+	UPDATE Accounts SET Balance -= @Amount WHERE ID = @AccountID
+
+END
+GO
+/****** Object:  Trigger [dbo].[new_transfer]    Script Date: 5/9/2013 9:59:51 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TRIGGER [dbo].[new_transfer] ON [dbo].[Transfers]
+FOR INSERT
+AS
+BEGIN
+	DECLARE @AccountFrom int, @AccountTo int,@Name nvarchar(12),
+		@Amount smallmoney, @Date datetime2
+
+	SELECT @AccountFrom= AccountFrom, @AccountTo = AccountTo,
+		@Amount = Amount, @Date = Date, @Name = Name
+		FROM inserted
+
+
+	BEGIN TRAN
+		exec AddNewExpence @AccountFrom, @Name, @Amount,'-200',@Date
+		exec AddNewIncome @AccountTo, @Name,@Amount,'-201',@Date
+	IF @@ERROR > 0
+		BEGIN
+			ROLLBACK
+			RETURN
+		END 
+	ELSE 
+		COMMIT TRAN
+END
+GO
 USE [master]
 GO
 ALTER DATABASE [HomeBank] SET  READ_WRITE 
-GO";
+GO
+";
     }
 }

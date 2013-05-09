@@ -9,6 +9,7 @@ using Microsoft.SqlServer.Management.Common;
 using System.Data.Common;
 using System.Configuration;
 
+
 namespace HBTest
 {
     static class Program
@@ -29,7 +30,7 @@ namespace HBTest
                 }
                 catch (Exception)
                 {
-                    CreateDatabase(); 
+                    CreateDatabase();
                 }
             }
 
@@ -43,18 +44,23 @@ namespace HBTest
             try
             {
                 string connectionString = "Data Source=(local);Integrated Security=True";
-
-                string script = Script.script;
                 SqlConnection con = new SqlConnection(connectionString);
-                Server server = new Server(new ServerConnection(con));
-                server.ConnectionContext.ExecuteNonQuery(script);
-                Console.WriteLine("Database has been created.");
-                Console.ReadLine();
+
+                Task t = Task.Factory.StartNew(() =>
+                {
+                    string script = Script.script;
+
+                    Server server = new Server(new ServerConnection(con));
+                    server.ConnectionContext.ExecuteNonQuery(script);
+
+                });
+                t.Wait();
+                con.Dispose();
+
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.GetType().Name + "\n" + e.Message);
-                Console.ReadLine();
+                MessageBox.Show(e.Message);
             }
         }
     }

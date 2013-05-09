@@ -72,7 +72,8 @@ namespace HBTest
 
             };
             // if user with this login already exists show message about that
-            if (hbContext.Users.Where(x => x.UserName == login).Count() > 1)
+            int usersWithThislogin = hbContext.Users.Where(y => y.UserName == login).Count();
+            if (usersWithThislogin == 0)
             {
                 hbContext.Users.Add(newUser);
                 hbContext.SaveChanges();
